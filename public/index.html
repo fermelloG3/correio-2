@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <!-- Incluir Axios desde la CDN -->
+     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Mensagem de Natal - Página Interna</title>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #fef9e7; /* Beige claro para legibilidad */
+            background-image: url('images/background.jpg');
+            background-repeat: repeat-x;
+            background-attachment: fixed;
+            background-position: center top;
+            background-size: cover;
+        }
+
+        #particles-js {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .logo-container {
+            text-align: center;
+            position: absolute; /* Fija el logo en la parte superior */
+            top: 5px; /* Reducido el espacio desde la parte superior */
+            left: -5%; /* Mueve el logo más hacia la izquierda */
+            transform: translateX(0); /* Ajuste para alinear el logo más a la izquierda */
+            z-index: 2; /* Asegura que el logo esté por encima del fondo y formulario */
+            position: relative; /* Asegura que el z-index funcione correctamente */
+        }
+
+        .logo-container img {
+            width: 50%; /* Ajusta el tamaño del logo, puedes cambiar este valor */
+            max-width: 600px; /* Tamaño máximo del logo */
+        }
+
+        .container {
+            position: relative;
+            z-index: 1; /* Asegura que el formulario quede debajo del logo */
+            padding: 20px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo claro para todo el formulario */
+            border-radius: 10px;
+            width: 60%; /* Reducir el tamaño del contenedor */
+            margin: 20px auto; /* Reducir espacio superior */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 30px; /* Tamaño de fuente más pequeño */
+            margin-bottom: 20px;
+            color: #c0392b; /* Rojo navideño para mayor contraste */
+        }
+
+        p {
+            font-size: 18px; /* Tamaño más pequeño para el subtítulo */
+            color: #333; /* Color oscuro para mejor legibilidad */
+        }
+
+        input[type="text"], select, textarea {
+            padding: 10px;
+            margin: 10px auto;
+            width: 90%; /* Ajuste del tamaño de los campos */
+            font-size: 16px;
+            display: block;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.9); /* Blanco con opacidad */
+            border: 2px solid #f7dc6f; /* Amarillo dorado */
+            color: #333; /* Texto oscuro */
+            border-radius: 5px;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #c0392b; /* Rojo natalino */
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #a93226;
+        }
+
+        .message-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco para los mensajes */
+            border-radius: 8px;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            color: #333; /* Texto oscuro */
+        }
+
+        .message-item:last-child {
+            border-bottom: none;
+        }
+
+            /* Estilos de los filtros */
+    .filter-container {
+        margin: 20px auto;
+        text-align: center;
+    }
+
+    .filter-container input {
+        padding: 10px;
+        margin: 5px;
+        width: 40%; /* Tamaño ajustable */
+        font-size: 16px;
+        border: 2px solid #f7dc6f;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .filter-subtitle {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #c0392b; /* Rojo natalino */
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+.filter-container {
+    margin: 20px auto;
+    text-align: left;  /* Cambiado a left para alinear a la izquierda */
+    width: 90%; /* Ajusta el tamaño si es necesario */
+}
+
+.filter-subtitle {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #c0392b; /* Rojo natalino */
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.filter-container input {
+    padding: 10px;
+    margin: 5px;
+    width: 40%; /* Tamaño ajustable */
+    font-size: 16px;
+    border: 2px solid #f7dc6f;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+
+    </style>
+</head>
+<body>
+
+    <div id="particles-js"></div>
+
+    <!-- Logo en la parte superior -->
+    <div class="logo-container">
+        <a href="https://ibb.co/BNDgL1s" target="_blank">
+            <img src="https://i.ibb.co/sHSFjB3/Pires-Hoteis-50-Anos-branco-01-01.png" alt="Pires-Hoteis-50-Anos-branco-01-01" />
+        </a>
+    </div>
+
+    <div class="container">
+        <h1>Correio de Natal</h1>
+        <p>Deixe sua mensagem de natal:</p>
+
+        <form id="christmas-message-form">
+            <!-- Campo para el hotel del remitente -->
+            <select id="sender-hotel" required>
+                <option value="">Escolha o hotel do remetente...</option>
+                <option value="Atoba">Atoba</option>
+                <option value="Ryan">Ryan</option>
+                <option value="Pires">Pires</option>
+                <option value="Brasil Express">Brasil Express</option>
+                <option value="Itajai Express">Itajai Express</option>
+                <option value="Italia">Italia</option>
+                <option value="Administrativo">Administrativo</option>
+            </select>
+
+            <!-- Campo para el nombre del remitente -->
+            <input type="text" id="sender-name" placeholder="Seu nome..." required>
+
+            <!-- Campo para el hotel del receptor -->
+            <select id="recipient-hotel" required>
+                <option value="">Escolha o hotel do destinatário...</option>
+                <option value="Atoba">Atoba</option>
+                <option value="Ryan">Ryan</option>
+                <option value="Pires">Pires</option>
+                <option value="Brasil Express">Brasil Express</option>
+                <option value="Itajai Express">Itajai Express</option>
+                <option value="Italia">Italia</option>
+                <option value="Administrativo">Administrativo</option>
+            </select>
+
+            <!-- Campo para el nombre del receptor -->
+            <input type="text" id="recipient-name" placeholder="Nome do destinatário..." required>
+
+            <!-- Campo para el mensaje -->
+            <textarea id="custom-message" placeholder="Escreva sua mensagem de Natal..." required rows="4"></textarea>
+            
+            <button type="submit">Enviar Mensagem</button>
+        </form>
+
+            <!-- Bloque para el filtro -->
+    <div class="filter-container">
+        <h2 class="filter-subtitle">🌟 Filtre as mensagens facilmente 🌟</h2>
+        <input type="text" id="filter-sender" placeholder="Quem enviou...">
+        <input type="text" id="filter-recipient" placeholder="Quem recebeu...">
+    </div>
+
+    
+
+
+        <div id="message-box"></div>
+    </div>
+
+    <script>
+      particlesJS("particles-js", {
+          "particles": {
+              "number": {
+                  "value": 100,
+                  "density": {
+                      "enable": true,
+                      "value_area": 800
+                  }
+              },
+              "color": {
+                  "value": "#ffffff"
+              },
+              "shape": {
+                  "type": "circle"
+              },
+              "opacity": {
+                  "value": 0.5
+              },
+              "size": {
+                  "value": 3,
+                  "random": true
+              },
+              "line_linked": {
+                  "enable": true,
+                  "distance": 150,
+                  "color": "#ffffff",
+                  "opacity": 0.4,
+                  "width": 1
+              },
+              "move": {
+                  "enable": true,
+                  "speed": 2
+              }
+          }
+      });
+  
+      document.getElementById('christmas-message-form').addEventListener('submit', function(event) {
+     event.preventDefault();
+
+     var senderHotel = document.getElementById('sender-hotel').value;
+     var senderName = document.getElementById('sender-name').value;
+     var recipientHotel = document.getElementById('recipient-hotel').value;
+     var recipientName = document.getElementById('recipient-name').value;
+     var customMessage = document.getElementById('custom-message').value;
+
+     if (senderHotel && senderName && recipientHotel && recipientName && customMessage) {
+         // Enviar los datos al servidor con axios
+         axios.post('https://correio-de-natal-7phv68pyp-fermellog3s-projects.vercel.app/save-message', {
+             senderHotel,
+             senderName,
+             recipientHotel,
+             recipientName,
+             customMessage
+         })
+         .then(response => {
+             alert('Mensaje guardado exitosamente');
+             // Limpiar el formulario
+             document.getElementById('christmas-message-form').reset();
+             // Recargar mensajes
+             loadMessages();
+         })
+         .catch(error => {
+             alert('Hubo un error al guardar el mensaje');
+             console.error('Error:', error);
+         });
+     } else {
+         alert('Por favor, complete todos los campos');
+     }
+ });
+
+ // Agregar filtros
+ document.getElementById('filter-sender').addEventListener('input', filterMessages);
+ document.getElementById('filter-recipient').addEventListener('input', filterMessages);
+
+ function filterMessages() {
+     const filterSender = document.getElementById('filter-sender').value.toLowerCase();
+     const filterRecipient = document.getElementById('filter-recipient').value.toLowerCase();
+
+     const messageItems = document.querySelectorAll('.message-item');
+     messageItems.forEach(item => {
+         const sender = item.querySelector('strong').nextSibling.nodeValue.trim().toLowerCase();
+         const recipient = item.querySelector('strong:nth-of-type(2)').nextSibling.nodeValue.trim().toLowerCase();
+
+         if (
+             sender.includes(filterSender) &&
+             recipient.includes(filterRecipient)
+         ) {
+             item.style.display = ''; // Mostrar el mensaje
+         } else {
+             item.style.display = 'none'; // Ocultar el mensaje
+         }
+     });
+ }
+
+ // Cargar mensajes al abrir la página
+ window.onload = loadMessages;
+
+ function loadMessages() {
+     axios.get('https://correio-de-natal-7phv68pyp-fermellog3s-projects.vercel.app/api/messages')
+         .then(response => {
+             const messages = response.data;
+             const messageBox = document.getElementById('message-box');
+             messageBox.innerHTML = ''; // Limpiar mensajes previos
+
+             messages.forEach(msg => {
+                 const messageItem = document.createElement('div');
+                 messageItem.classList.add('message-item');
+                 messageItem.innerHTML = `
+                     <strong>De:</strong> ${msg.senderName} (${msg.senderHotel})<br>
+                     <strong>Para:</strong> ${msg.recipientName} (${msg.recipientHotel})<br>
+                     <strong>Mensaje:</strong> ${msg.customMessage}<br>
+                     <small><em>Enviado en: ${msg.created_at}</em></small>
+                 `;
+                 messageBox.appendChild(messageItem);
+             });
+         })
+         .catch(error => console.error('Error al cargar mensajes:', error));
+ }
+
+</script>
+</body>
+</html>

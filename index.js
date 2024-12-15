@@ -12,7 +12,7 @@ app.use(cors()); // Permitir solicitudes de cualquier origen
 
 // Opcional: Configuración personalizada de CORS
 const corsOptions = {
-  origin: ['https://correio-de-natal.vercel.app'], // Lista blanca de dominios permitidos
+  origin: ['https://correio-2-fermellog3s-projects.vercel.app'], // Lista blanca de dominios permitidos
   methods: 'GET,POST,PUT,DELETE', // Métodos HTTP permitidos
   allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
   credentials: true, // Permitir cookies/credenciales en solicitudes

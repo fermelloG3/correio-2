@@ -13,7 +13,7 @@ const connectToDatabase = async () => {
     return cachedDb; // Si ya existe una conexión, la reutilizamos
   }
 
-  const client = new MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+  const client = new MongoClient(mongoUrl);
 
   try {
     await client.connect();

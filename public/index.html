@@ -188,17 +188,18 @@
             <!-- Campo para el hotel del remitente -->
             <select id="sender-hotel" required>
                 <option value="">Escolha o hotel do remetente...</option>
+                <option value="Administrativo">Administrativo</option>
                 <option value="Atoba">Atoba</option>
-                <option value="Ryan">Ryan</option>
-                <option value="Pires">Pires</option>
                 <option value="Brasil Express">Brasil Express</option>
+                <option value="Ibis Combo">Ibis Combo</option>
+                <option value="Ibis Styles">Ibis Styles</option>
                 <option value="Itajai Express">Itajai Express</option>
                 <option value="Italia">Italia</option>
-                <option value="Administrativo">Administrativo</option>
                 <option value="Mercure">Mercure</option>
                 <option value="Novotel">Novotel</option>
-                <option value="Ibis Styles">Ibis Styles</option>
-                <option value="Ibis Combo">Ibis Combo</option>
+                <option value="Pires">Pires</option>
+                <option value="Ryan">Ryan</option>
+                 
             </select>
 
             <!-- Campo para el nombre del remitente -->
@@ -207,17 +208,18 @@
             <!-- Campo para el hotel del receptor -->
             <select id="recipient-hotel" required>
                 <option value="">Escolha o hotel do destinatário...</option>
+                <option value="">Escolha o hotel do remetente...</option>
+                <option value="Administrativo">Administrativo</option>
                 <option value="Atoba">Atoba</option>
-                <option value="Ryan">Ryan</option>
-                <option value="Pires">Pires</option>
                 <option value="Brasil Express">Brasil Express</option>
+                <option value="Ibis Combo">Ibis Combo</option>
+                <option value="Ibis Styles">Ibis Styles</option>
                 <option value="Itajai Express">Itajai Express</option>
                 <option value="Italia">Italia</option>
-                <option value="Administrativo">Administrativo</option>
                 <option value="Mercure">Mercure</option>
                 <option value="Novotel">Novotel</option>
-                <option value="Ibis Styles">Ibis Styles</option>
-                <option value="Ibis Combo">Ibis Combo</option>
+                <option value="Pires">Pires</option>
+                <option value="Ryan">Ryan</option>
             </select>
 
             <!-- Campo para el nombre del receptor -->
@@ -290,7 +292,7 @@
 
     // Validar que los campos no estén vacíos
     if (!senderHotel || !senderName || !recipientHotel || !recipientName || !customMessage) {
-        alert('Por favor, complete todos los campos.');
+        alert('Por favor, complete todos os campos.');
         return; // Evitar enviar los datos si falta información
     }
 
@@ -314,15 +316,15 @@
     })
     .then(response => response.json()) // Convierte la respuesta en JSON
     .then(data => {
-        alert('Mensaje guardado exitosamente');
+        alert('Mensagem enviada');
         // Limpiar el formulario
         document.getElementById('christmas-message-form').reset();
         // Recargar mensajes
         loadMessages();
     })
     .catch(error => {
-        alert('Hubo un error al guardar el mensaje');
-        console.error('Error:', error);
+        alert('Erro ao enviar a mensagem');
+        console.error('Erro:', error);
     });
 });
 

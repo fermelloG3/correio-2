@@ -2,8 +2,7 @@ const { MongoClient } = require('mongodb');
 const express = require('express');
 const app = express();
 
-// Middleware para manejar solicitudes JSON
-app.use(express.json());
+app.use(express.json()); // Para que Express pueda manejar solicitudes JSON
 
 // Conexión a MongoDB
 const client = new MongoClient('mongodb://localhost:27017'); // Cambia la URL si es necesario
@@ -21,31 +20,23 @@ client.connect()
   });
 
 // Función para permitir CORS
-const allowCors = (req, res, next) => {
+const allowCors = (fn) => async (req, res) => {
   const allowedOrigins = ['https://correio-2.vercel.app', 'http://localhost:3000'];
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigins.join(', '));
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, PATCH, DELETE, POST, PUT');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   if (req.method === 'OPTIONS') {
-    res.status(204).end();
+    res.status(200).end();
     return;
   }
 
-  next();
+  return await fn(req, res);
 };
 
-// Aplicar middleware de CORS
-app.use(allowCors);
-
-// Ruta para guardar el mensaje
-app.post('/api/save-message', async (req, res) => {
+// Handler para guardar el mensaje
+const handler = async (req, res) => {
   try {
     console.log('Datos recibidos:', req.body);
 
@@ -56,17 +47,12 @@ app.post('/api/save-message', async (req, res) => {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
 
-    if (
-      typeof senderHotel !== 'string' ||
-      typeof recipientHotel !== 'string' ||
-      typeof senderName !== 'string' ||
-      typeof recipientName !== 'string' ||
-      typeof customMessage !== 'string'
-    ) {
+    if (typeof senderHotel !== 'string' || typeof recipientHotel !== 'string' || typeof senderName !== 'string' || typeof recipientName !== 'string' || typeof customMessage !== 'string') {
       return res.status(400).json({ error: 'Los datos deben ser cadenas de texto válidas' });
     }
 
     // Verificar si la base de datos está disponible
+    const db = req.app.locals.db;
     if (!db) {
       return res.status(500).json({ error: 'Base de datos no disponible' });
     }
@@ -90,9 +76,12 @@ app.post('/api/save-message', async (req, res) => {
     console.error('Error al guardar el mensaje:', err);
     res.status(500).json({ error: 'Error al guardar el mensaje', details: err.message });
   }
-});
+};
 
-// Iniciar el servidor
+// Exportar la función con CORS
+module.exports = allowCors(handler);
+
+// Iniciar el servidor de Express
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Servidor corriendo en el puerto ${port}`);

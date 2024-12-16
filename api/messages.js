@@ -1,19 +1,5 @@
-const { createClient } = require('@supabase/supabase-js');
+const { MongoClient } = require('mongodb');
 
-// Configuración de Supabase
-const supabaseUrl = process.env.SUPABASE_URL;  // URL de Supabase desde .env
-const supabaseKey = process.env.SUPABASE_KEY;  // Clave de Supabase desde .env
-
-// Verificar si las variables de entorno están definidas
-if (!supabaseUrl || !supabaseKey) {
-  console.error('SUPABASE_URL o SUPABASE_KEY no están definidas en el archivo .env');
-  process.exit(1); // Finaliza el proceso si no se encuentran las variables de entorno
-}
-
-// Crear el cliente de Supabase
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Permitir CORS
 const allowCors = (fn) => async (req, res) => {
   const allowedOrigins = ['https://correio-2.vercel.app', 'http://localhost:3000'];
   const origin = req.headers.origin;
@@ -35,27 +21,39 @@ const allowCors = (fn) => async (req, res) => {
   return await fn(req, res);
 };
 
-// Manejador de la solicitud
+// Instancia persistente de la conexión
+let cachedClient = null;
+let cachedDb = null;
+
+const connectToDatabase = async () => {
+  if (cachedDb) return { client: cachedClient, db: cachedDb };
+
+  const uri = process.env.MONGO_URL || 'mongodb://localhost:27017'; // URI para producción o desarrollo local
+  const client = new MongoClient(uri);
+  await client.connect();
+
+  const db = client.db('correiodenatal'); // Cambia por el nombre de tu base de datos
+  cachedClient = client;
+  cachedDb = db;
+
+  return { client, db };
+};
+
 const handler = async (req, res) => {
   if (req.method === 'GET') {
     try {
-      // Hacer la consulta a la tabla 'suporte' de Supabase
-      const { data, error } = await supabase
-        .from('suporte')  // Nombre de la tabla en Supabase
-        .select('*')      // Seleccionar todos los registros
-        .limit(100);      // Limitar los resultados a 100 registros
+      const { db } = await connectToDatabase();
+      const collection = db.collection('suporte');
 
-      if (error) {
-        console.error('Error al obtener los mensajes:', error.message);
-        return res.status(500).json({ error: 'Error al obtener los mensajes', details: error.message });
-      }
-
-      res.status(200).json(data);  // Devolver los datos obtenidos de Supabase
+      // Obtener los primeros 100 registros
+      const rows = await collection.find().limit(100).toArray();
+      res.status(200).json(rows);
     } catch (err) {
       console.error('Error al obtener los mensajes:', err.message);
       res.status(500).json({ error: 'Error al obtener los mensajes', details: err.message });
     }
   } else {
+    res.setHeader('Allow', 'GET'); // Especificar los métodos permitidos
     res.status(405).json({ error: 'Método no permitido' });
   }
 };

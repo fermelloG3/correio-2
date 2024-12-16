@@ -354,11 +354,12 @@ function loadMessages() {
                 const messageItem = document.createElement('div');
                 messageItem.classList.add('message-item');
                 messageItem.innerHTML = `
-                    <strong>De:</strong> ${msg.senderName} (${msg.senderHotel})<br>
-                    <strong>Para:</strong> ${msg.recipientName} (${msg.recipientHotel})<br>
-                    <strong>Mensaje:</strong> ${msg.customMessage}<br>
-                    <small><em>Enviado en: ${msg.created_at}</em></small>
-                `;
+    <strong>De:</strong> ${msg.senderName} (${msg.senderHotel})<br>
+    <strong>Para:</strong> ${msg.recipientName} (${msg.recipientHotel})<br>
+    <strong>Mensaje:</strong> ${msg.customMessage}<br>
+    <small><em>Enviado en: ${msg.created_at}</em></small>
+`;
+
                 messageBox.appendChild(messageItem);
             });
         })

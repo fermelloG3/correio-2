@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 
 const allowCors = (fn) => async (req, res) => {
-  const allowedOrigins = ['https://correio-de-natal.vercel.app', 'http://localhost:3000']; // Dominios permitidos
+  const allowedOrigins = ['https://correio-de-natal.vercel.app', 'http://localhost:3000'];
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
@@ -15,24 +15,26 @@ const allowCors = (fn) => async (req, res) => {
   );
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end(); // Responde directamente a las solicitudes preflight
+    res.status(200).end();
     return;
   }
   return await fn(req, res);
 };
 
 const handler = async (req, res) => {
-  const uri = process.env.MONGODB_URI; // Configura correctamente tu URI
+  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017'; // URI predeterminada para desarrollo local
   const client = new MongoClient(uri);
 
   if (req.method === 'GET') {
     try {
       await client.connect();
-      const db = client.db('correiodenatal'); // Reemplaza con el nombre de tu base de datos
+      const db = client.db('correiodenatal');
       const collection = db.collection('suporte');
-      const rows = await collection.find().toArray();
+      
+      const rows = await collection.find().limit(100).toArray(); // Limitar los resultados para no sobrecargar la respuesta
       res.status(200).json(rows);
     } catch (err) {
+      console.error('Error al obtener los mensajes:', err.message);
       res.status(500).json({ error: 'Error al obtener los mensajes', details: err.message });
     } finally {
       await client.close();
@@ -43,4 +45,3 @@ const handler = async (req, res) => {
 };
 
 module.exports = allowCors(handler);
-

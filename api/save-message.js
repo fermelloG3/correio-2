@@ -2,10 +2,8 @@ const { MongoClient } = require('mongodb');
 const express = require('express');
 const app = express();
 
-app.use(express.json()); // Para que Express pueda manejar solicitudes JSON
-
 // Conexión a MongoDB
-const client = new MongoClient('mongodb://localhost:27017'); // Cambia la URL si es necesario
+const client = new MongoClient(process.env.MONGO_URL); // Cambia la URL si es necesario
 let db;
 
 // Conectar a MongoDB
@@ -54,10 +52,10 @@ const handler = async (req, res) => {
     }
 
     // Verificar si la base de datos está disponible
-    const db = req.app.locals.db;
-    if (!db) {
-      return res.status(500).json({ error: 'Base de datos no disponible' });
-    }
+    // const db = req.app.locals.db;
+    // if (!db) {
+    //   return res.status(500).json({ error: 'Base de datos no disponible' });
+    // }
 
     // Inserción de mensaje en la base de datos
     const messages = db.collection('messages');
@@ -85,9 +83,3 @@ const handler = async (req, res) => {
 
 // Exportar la función con CORS
 module.exports = allowCors(handler);
-
-// Iniciar el servidor de Express
-const port = process.env.PORT || 5000;
-app.listen(port, () => {
-  console.log(`Servidor corriendo en el puerto ${port}`);
-});

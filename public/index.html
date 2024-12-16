@@ -274,13 +274,18 @@
       document.getElementById('christmas-message-form').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    var senderHotel = document.getElementById('sender-hotel').value;
-    var senderName = document.getElementById('sender-name').value;
-    var recipientHotel = document.getElementById('recipient-hotel').value;
-    var recipientName = document.getElementById('recipient-name').value;
-    var customMessage = document.getElementById('custom-message').value;
+    const senderHotel = document.getElementById('sender-hotel').value;
+    const senderName = document.getElementById('sender-name').value;
+    const recipientHotel = document.getElementById('recipient-hotel').value;
+    const recipientName = document.getElementById('recipient-name').value;
+    const customMessage = document.getElementById('custom-message').value;
 
-    
+    // Validar que los campos no estén vacíos
+    if (!senderHotel || !senderName || !recipientHotel || !recipientName || !customMessage) {
+        alert('Por favor, complete todos los campos.');
+        return; // Evitar enviar los datos si falta información
+    }
+
     // Enviar los datos al servidor con axios
     axios.post('https://www.natalhoteispires.com.br/api/save-message', {
         senderHotel,
@@ -312,9 +317,8 @@
             console.error('Error de red o configuración', error.message);
         }
     });
-}  
-  
-);
+});
+
 
 // Agregar filtros
 document.getElementById('filter-sender').addEventListener('input', filterMessages);

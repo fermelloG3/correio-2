@@ -61,7 +61,7 @@ async function startServer() {
     console.log('Conectado a MongoDB');
     
     // Compartir la base de datos con las rutas
-    const db = client.db('nombre_de_tu_base'); // Reemplaza con el nombre de tu base de datos
+    const db = client.db('correiodenatal'); // Reemplaza con el nombre de tu base de datos
     app.locals.db = db; // Agrega la base de datos a las variables locales de la app
 
     app.listen(PORT, () => {

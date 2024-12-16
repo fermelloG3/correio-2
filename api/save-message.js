@@ -43,9 +43,6 @@ const handler = async (req, res) => {
     const { senderHotel, senderName, recipientHotel, recipientName, customMessage } = req.body;
 
 
-    if (typeof senderHotel !== 'string' || typeof recipientHotel !== 'string' || typeof senderName !== 'string' || typeof recipientName !== 'string' || typeof customMessage !== 'string') {
-      return res.status(400).json({ error: 'Los datos deben ser cadenas de texto válidas' });
-    }
 
     // Verificar si la base de datos está disponible
     const db = req.app.locals.db;

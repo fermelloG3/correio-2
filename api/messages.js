@@ -22,7 +22,7 @@ const allowCors = (fn) => async (req, res) => {
 };
 
 const handler = async (req, res) => {
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017'; // URI predeterminada para desarrollo local
+  const uri = process.env.MONGO_URL || 'mongodb://localhost:27017'; // URI predeterminada para desarrollo local
   const client = new MongoClient(uri);
 
   if (req.method === 'GET') {

@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000; // Usa el puerto definido en .env o 3000 
 
 // Configuración de CORS para orígenes específicos
 const corsOptions = {
-  origin: ['https://correio-2.vercel.app', 'https://correio-de-natal-7phv68pyp-fermellog3s-projects.vercel.app'], // Lista de dominios permitidos
+  origin: ['https://correio-2.vercel.app', 'https://vercel.com/fermellog3s-projects/correio-2/9AN498f1SeoYyEqqRVceFrHkkwq9'], // Lista de dominios permitidos
   methods: 'GET,POST,PUT,DELETE,OPTIONS', // Métodos permitidos
   allowedHeaders: 'Content-Type,Authorization', // Encabezados permitidos
   credentials: true, // Permitir cookies si es necesario

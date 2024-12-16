@@ -5,9 +5,8 @@ const app = express();
 app.use(express.json()); // Para que Express pueda manejar solicitudes JSON
 
 // Conexión a MongoDB
-const uri = process.env.MONGO_URL || 'mongodb://localhost:27017'; // URI para producción o desarrollo local
-  const client = new MongoClient(uri);
-  await client.connect();
+const client = new MongoClient(process.env.MONGO_URL); // Cambia la URL si es necesario
+let db;
 
 // Conectar a MongoDB
 client.connect()

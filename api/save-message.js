@@ -1,3 +1,5 @@
+const { MongoClient } = require('mongodb');
+
 const allowCors = (fn) => async (req, res) => {
   const allowedOrigins = ['https://www.natalhoteispires.com.br', 'http://localhost:3000'];
   res.setHeader('Access-Control-Allow-Origin', allowedOrigins.join(', '));
@@ -19,7 +21,7 @@ const handler = async (req, res) => {
 
     const { senderHotel, senderName, recipientHotel, recipientName, customMessage } = req.body;
 
-    // Validación adicional
+    // Validación de datos
     if (!senderHotel || !senderName || !recipientHotel || !recipientName || !customMessage) {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
@@ -28,6 +30,10 @@ const handler = async (req, res) => {
       return res.status(400).json({ error: 'Los datos deben ser cadenas de texto válidas' });
     }
 
+    // Inserción de mensaje en la base de datos
+    const db = req.app.locals.db; // Asegúrate de que `db` esté correctamente configurado
+    const messages = db.collection('suporte');
+    
     const newMessage = {
       senderHotel,
       senderName,
@@ -37,13 +43,11 @@ const handler = async (req, res) => {
       created_at: new Date(),
     };
 
-    const db = req.app.locals.db;
-    const messages = db.collection('suporte');
-
     const result = await messages.insertOne(newMessage);
 
     res.json({ message: 'Mensaje guardado exitosamente', id: result.insertedId });
   } catch (err) {
+    console.error('Error al guardar el mensaje:', err);
     res.status(500).json({ error: 'Error al guardar el mensaje', details: err.message });
   }
 };

@@ -280,7 +280,7 @@
     var recipientName = document.getElementById('recipient-name').value;
     var customMessage = document.getElementById('custom-message').value;
 
-    if (senderHotel && senderName && recipientHotel && recipientName && customMessage) {
+    
     // Enviar los datos al servidor con axios
     axios.post('https://www.natalhoteispires.com.br/api/save-message', {
         senderHotel,
@@ -312,11 +312,9 @@
             console.error('Error de red o configuración', error.message);
         }
     });
-} else {
-    alert('Por favor, complete todos los campos');
-}
-
-});
+}  
+  
+);
 
 // Agregar filtros
 document.getElementById('filter-sender').addEventListener('input', filterMessages);

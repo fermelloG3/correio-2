@@ -9,7 +9,10 @@ const PORT = process.env.PORT || 3000; // Usa el puerto definido en .env o 3000 
 
 // Configuración de CORS para orígenes específicos
 const corsOptions = {
-  origin: ['https://www.natalhoteispires.com.br', 'https://vercel.com/fermellog3s-projects/correio-2/9AN498f1SeoYyEqqRVceFrHkkwq9'], // Lista de dominios permitidos
+  origin: [
+    'https://www.natalhoteispires.com.br', 
+    'https://vercel.com/fermellog3s-projects/correio-2/9AN498f1SeoYyEqqRVceFrHkkwq9'
+  ], // Lista de dominios permitidos
   methods: 'GET,POST,PUT,DELETE,OPTIONS', // Métodos permitidos
   allowedHeaders: 'Content-Type,Authorization', // Encabezados permitidos
   credentials: true, // Permitir cookies si es necesario
@@ -32,13 +35,28 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Asegúrate de que la variable MONGO_URL esté cargada correctamente
+// Conexión a MongoDB
 if (!process.env.MONGO_URL) {
   console.error('MONGO_URL no está definida en el archivo .env');
   process.exit(1); // Finaliza el proceso si no se encuentra la URL de MongoDB
 }
 
 const client = new MongoClient(process.env.MONGO_URL); // URL de MongoDB desde .env
+
+// Middleware para conectar a MongoDB dinámicamente
+app.use(async (req, res, next) => {
+  try {
+    if (!client.isConnected()) {
+      await client.connect();
+      console.log('Conexión a MongoDB establecida');
+    }
+    req.db = client.db('correiodenatal'); // Reemplaza con el nombre de tu base de datos
+    next();
+  } catch (err) {
+    console.error('Error al conectar a MongoDB:', err);
+    res.status(500).json({ error: 'Error de conexión a la base de datos' });
+  }
+});
 
 // Importar rutas desde la carpeta api
 const messagesRoute = require('./api/messages');
@@ -54,23 +72,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Ocurrió un error en el servidor' });
 });
 
-// Iniciar el servidor y conectar a MongoDB
-async function startServer() {
-  try {
-    await client.connect(); // Conexión a MongoDB
-    console.log('Conectado a MongoDB');
-    
-    // Compartir la base de datos con las rutas
-    const db = client.db('correiodenatal'); // Reemplaza con el nombre de tu base de datos
-    app.locals.db = db; // Agrega la base de datos a las variables locales de la app
-
-    app.listen(PORT, () => {
-      console.log(`Servidor corriendo en http://localhost:${PORT}`);
-    });
-  } catch (err) {
-    console.error('Error al conectar a MongoDB', err);
-    process.exit(1); // Finaliza el proceso si falla la conexión
-  }
-}
-
-startServer();
+// Exportar la app para que Vercel la use
+module.exports = app;

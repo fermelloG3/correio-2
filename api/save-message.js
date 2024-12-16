@@ -1,32 +1,20 @@
 const { MongoClient } = require('mongodb');
 
-// Definir la URL de MongoDB y la base de datos
-const mongoUrl = 'mongodb://localhost:27017'; // Cambia esto si es necesario
-const dbName = 'correiodenatal';  // Cambia el nombre de tu base de datos
+const allowCors = (fn) => async (req, res) => {
+  const allowedOrigins = ['https://correio-2.vercel.app', 'http://localhost:3000'];
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigins.join(', '));
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
-let cachedDb = null;
-
-// Función para obtener la conexión a la base de datos
-const connectToDatabase = async () => {
-  if (cachedDb) {
-    console.log("Usando la conexión de caché");
-    return cachedDb; // Si ya existe una conexión, la reutilizamos
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
   }
 
-  const client = new MongoClient(mongoUrl);
-
-  try {
-    await client.connect();
-    cachedDb = client.db(dbName);
-    console.log("Conexión exitosa a MongoDB");
-    return cachedDb;
-  } catch (err) {
-    console.error('Error al conectar a la base de datos:', err);
-    throw new Error('No se pudo conectar a la base de datos');
-  }
+  return await fn(req, res);
 };
 
-// Función que maneja la solicitud POST
 const handler = async (req, res) => {
   try {
     console.log('Datos recibidos:', req.body);
@@ -42,11 +30,10 @@ const handler = async (req, res) => {
       return res.status(400).json({ error: 'Los datos deben ser cadenas de texto válidas' });
     }
 
-    // Conectar a la base de datos
-    const db = await connectToDatabase();
-    const messages = db.collection('suporte'); // Acceder a la colección
-
-    // Crear el mensaje
+    // Inserción de mensaje en la base de datos
+    const db = req.app.locals.db; // Asegúrate de que db esté correctamente configurado
+    const messages = db.collection('suporte');
+    
     const newMessage = {
       senderHotel,
       senderName,
@@ -56,7 +43,6 @@ const handler = async (req, res) => {
       created_at: new Date(),
     };
 
-    // Insertar el mensaje en la base de datos
     const result = await messages.insertOne(newMessage);
 
     res.json({ message: 'Mensaje guardado exitosamente', id: result.insertedId });
@@ -66,4 +52,4 @@ const handler = async (req, res) => {
   }
 };
 
-module.exports = handler;
+module.exports = allowCors(handler);

@@ -72,8 +72,8 @@ const handler = async (req, res) => {
     // Intentar insertar el mensaje en la base de datos
     const result = await messages.insertOne(newMessage); // Inserta el mensaje
 
-    console.log('Mensaje insertado con éxito:', result); // Imprime el resultado de la inserción
-    res.json({ message: 'Mensaje guardado exitosamente', id: result.insertedId }); // Responde con éxito
+    console.log('Mensagem enviada:', result); // Imprime el resultado de la inserción
+    res.json({ message: 'Mensagem enviada', id: result.insertedId }); // Responde con éxito
 
   } catch (error) {
     console.error('Error al guardar el mensaje:', error); // Imprime el error en la consola

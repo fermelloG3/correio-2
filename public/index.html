@@ -369,15 +369,15 @@ function loadMessages() {
                 messageItem.innerHTML = `
     <strong>De:</strong> ${msg.senderName} (${msg.senderHotel})<br>
     <strong>Para:</strong> ${msg.recipientName} (${msg.recipientHotel})<br>
-    <strong>Mensaje:</strong> ${msg.customMessage}<br>
-    <small><em>Enviado en: ${msg.created_at}</em></small>
+    <strong>Mensagem:</strong> ${msg.customMessage}<br>
+    <small><em>Enviado em: ${msg.created_at}</em></small>
 `;
 
                 messageBox.appendChild(messageItem);
             });
         })
         .catch(error => {
-            console.error('Error al cargar mensajes:', error);
+            console.error('Erro ao cargar mensagens:', error);
             
             // Ver más detalles sobre el error
             if (error.response) {

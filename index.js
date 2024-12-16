@@ -46,6 +46,7 @@ const client = new MongoClient(process.env.MONGO_URL); // URL de MongoDB desde .
 // Middleware para conectar a MongoDB dinámicamente
 app.use(async (req, res, next) => {
   try {
+    // Conexión a MongoDB si no está ya conectada
     if (!client.isConnected()) {
       await client.connect();
       console.log('Conexión a MongoDB establecida');

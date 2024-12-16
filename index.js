@@ -71,5 +71,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Ocurrió un error en el servidor' });
 });
 
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
+
 // Exportar la app para que Vercel la use
 module.exports = app;

@@ -360,9 +360,25 @@ function loadMessages() {
         })
         .catch(error => {
             console.error('Error al cargar mensajes:', error);
-            alert('Hubo un error al cargar los mensajes');
+            
+            // Ver más detalles sobre el error
+            if (error.response) {
+                // Si hay una respuesta del servidor, muestra el código y los detalles
+                console.error('Detalles del error (response):', error.response);
+                console.error('Código de estado:', error.response.status);
+                console.error('Cuerpo de la respuesta:', error.response.data);
+            } else if (error.request) {
+                // Si no hubo respuesta del servidor
+                console.error('No hubo respuesta del servidor:', error.request);
+            } else {
+                // Si el error es debido a algo en la configuración de la solicitud
+                console.error('Error en la configuración de la solicitud:', error.message);
+            }
+
+            alert('Hubo un error al cargar los mensajes. Revisa la consola para más detalles.');
         });
 }
+
 
 
 </script>

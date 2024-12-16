@@ -17,6 +17,7 @@ client.connect()
   })
   .catch((err) => {
     console.error('Error al conectar a MongoDB:', err);
+    process.exit(1); // Termina el proceso si no se puede conectar
   });
 
 // Función para permitir CORS
@@ -40,8 +41,9 @@ const handler = async (req, res) => {
   try {
     console.log('Datos recibidos:', req.body);
 
+    // Desestructuración de los datos del cuerpo de la solicitud
     const { senderHotel, senderName, recipientHotel, recipientName, customMessage } = req.body;
-
+    
     // Validación de datos
     if (!senderHotel || !senderName || !recipientHotel || !recipientName || !customMessage) {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
@@ -69,12 +71,15 @@ const handler = async (req, res) => {
       created_at: new Date(),
     };
 
-    const result = await messages.insertOne(newMessage);
+    // Intentar insertar el mensaje en la base de datos
+    const result = await messages.insertOne(newMessage); // Inserta el mensaje
 
-    res.json({ message: 'Mensaje guardado exitosamente', id: result.insertedId });
-  } catch (err) {
-    console.error('Error al guardar el mensaje:', err);
-    res.status(500).json({ error: 'Error al guardar el mensaje', details: err.message });
+    console.log('Mensaje insertado con éxito:', result); // Imprime el resultado de la inserción
+    res.json({ message: 'Mensaje guardado exitosamente', id: result.insertedId }); // Responde con éxito
+
+  } catch (error) {
+    console.error('Error al guardar el mensaje:', error); // Imprime el error en la consola
+    res.status(500).json({ error: 'Error al guardar el mensaje', details: error.message }); // Responde con error
   }
 };
 

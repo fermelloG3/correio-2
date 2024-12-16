@@ -2,7 +2,7 @@ require('dotenv').config(); // Carga variables de entorno desde el archivo .env
 const express = require('express');
 const cors = require('cors'); // Importamos cors
 const path = require('path');
-const { MongoClient } = require('mongodb');
+const { createClient } = require('@supabase/supabase-js'); // Importamos Supabase
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Usa el puerto definido en .env o 3000 como predeterminado
@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000; // Usa el puerto definido en .env o 3000 
 // Configuración de CORS para orígenes específicos
 const corsOptions = {
   origin: [
-    'https://www.natalhoteispires.com.br', 
+    'https://www.natalhoteispires.com.br',
     'https://vercel.com/fermellog3s-projects/correio-2/9AN498f1SeoYyEqqRVceFrHkkwq9'
   ], // Lista de dominios permitidos
   methods: 'GET,POST,PUT,DELETE,OPTIONS', // Métodos permitidos
@@ -35,26 +35,23 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Conexión a MongoDB
-if (!process.env.MONGO_URL) {
-  console.error('MONGO_URL no está definida en el archivo .env');
-  process.exit(1); // Finaliza el proceso si no se encuentra la URL de MongoDB
+// Configuración de Supabase
+const supabaseUrl = process.env.SUPABASE_URL;  // Supabase URL desde .env
+const supabaseKey = process.env.SUPABASE_KEY;  // Supabase clave pública desde .env
+
+// Verificar si las variables de entorno están definidas
+if (!supabaseUrl || !supabaseKey) {
+  console.error('SUPABASE_URL o SUPABASE_KEY no están definidas en el archivo .env');
+  process.exit(1); // Finaliza el proceso si no se encuentran las variables de entorno
 }
 
-const client = new MongoClient(process.env.MONGO_URL); // URL de MongoDB desde .env
+// Crear el cliente de Supabase
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Middleware para conectar a MongoDB dinámicamente
-app.use(async (req, res, next) => {
-  try {
-    // Intentamos conectar solo una vez, sin usar isConnected()
-    await client.connect();
-    console.log('Conexión a MongoDB establecida');
-    req.db = client.db('correiodenatal'); // Reemplaza con el nombre de tu base de datos
-    next();
-  } catch (err) {
-    console.error('Error al conectar a MongoDB:', err);
-    res.status(500).json({ error: 'Error de conexión a la base de datos' });
-  }
+// Middleware para conectar a Supabase
+app.use((req, res, next) => {
+  req.supabase = supabase; // Hacemos disponible el cliente de Supabase en cada solicitud
+  next();
 });
 
 // Importar rutas desde la carpeta api

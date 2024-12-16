@@ -1,29 +1,5 @@
-const express = require('express');
 const { MongoClient } = require('mongodb');
-const axios = require('axios');
 
-const app = express();
-const port = 3000;
-
-app.use(express.json()); // Para manejar el cuerpo de las solicitudes POST
-
-// Conexión a MongoDB
-const mongoUrl = 'mongodb://localhost:27017'; // URL de conexión a MongoDB
-const dbName = 'correiodenatal';  // Nombre de tu base de datos
-let db;
-
-// Establecer la conexión a MongoDB y guardarla en `app.locals.db`
-MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(client => {
-    console.log('Conectado a la base de datos');
-    db = client.db(dbName);  // Conexión a la base de datos
-    app.locals.db = db;      // Guardar la base de datos en `app.locals` para usarla en las rutas
-  })
-  .catch(err => {
-    console.error('Error al conectar a MongoDB:', err);
-  });
-
-// Función para permitir CORS
 const allowCors = (fn) => async (req, res) => {
   const allowedOrigins = ['https://www.natalhoteispires.com.br', 'http://localhost:3000'];
   res.setHeader('Access-Control-Allow-Origin', allowedOrigins.join(', '));
@@ -39,14 +15,8 @@ const allowCors = (fn) => async (req, res) => {
   return await fn(req, res);
 };
 
-// Handler para guardar el mensaje
 const handler = async (req, res) => {
   try {
-    const db = req.app.locals.db;
-    if (!db) {
-      return res.status(500).json({ error: 'Base de datos no disponible' });
-    }
-
     console.log('Datos recibidos:', req.body);
 
     const { senderHotel, senderName, recipientHotel, recipientName, customMessage } = req.body;
@@ -61,8 +31,9 @@ const handler = async (req, res) => {
     }
 
     // Inserción de mensaje en la base de datos
+    const db = req.app.locals.db; // Asegúrate de que `db` esté correctamente configurado
     const messages = db.collection('suporte');
-
+    
     const newMessage = {
       senderHotel,
       senderName,
@@ -81,11 +52,4 @@ const handler = async (req, res) => {
   }
 };
 
-// Ruta para guardar el mensaje
-app.post('/save-message', allowCors(handler));
-
-// Iniciar el servidor
-app.listen(port, () => {
-  console.log(`Servidor ejecutándose en http://localhost:${port}`);
-});
-
+module.exports = allowCors(handler);

@@ -7,18 +7,19 @@ const { MongoClient } = require('mongodb');
 const app = express();
 const PORT = process.env.PORT || 3000; // Usa el puerto definido en .env o 3000 como predeterminado
 
-// Configuración de CORS personalizada para permitir orígenes específicos
+// Configuración de CORS para orígenes específicos
 const corsOptions = {
   origin: ['https://correio-2.vercel.app', 'https://correio-de-natal-7phv68pyp-fermellog3s-projects.vercel.app'], // Lista de dominios permitidos
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
-  credentials: true, // Permitir cookies/credenciales si es necesario
-  optionsSuccessStatus: 204, // Código de respuesta para preflight
+  methods: 'GET,POST,PUT,DELETE,OPTIONS', // Métodos permitidos
+  allowedHeaders: 'Content-Type,Authorization', // Encabezados permitidos
+  credentials: true, // Permitir cookies si es necesario
 };
 
-// Usar CORS para todas las rutas
-app.use(cors(corsOptions)); // Configura CORS globalmente
-app.options('*', cors(corsOptions)); // Habilita solicitudes preflight
+// Habilitar CORS para todas las rutas con configuración personalizada
+app.use(cors(corsOptions));
+
+// Manejo de solicitudes pre-flight (OPTIONS) globalmente
+app.options('*', cors(corsOptions)); // Permite solicitudes OPTIONS pre-flight para todas las rutas
 
 // Middleware para parsear JSON
 app.use(express.json());
@@ -60,7 +61,7 @@ async function startServer() {
     console.log('Conectado a MongoDB');
     
     // Compartir la base de datos con las rutas
-    const db = client.db('correiodenatal'); // Reemplaza con el nombre de tu base de datos
+    const db = client.db('nombre_de_tu_base'); // Reemplaza con el nombre de tu base de datos
     app.locals.db = db; // Agrega la base de datos a las variables locales de la app
 
     app.listen(PORT, () => {

@@ -272,87 +272,98 @@
       });
   
       document.getElementById('christmas-message-form').addEventListener('submit', function(event) {
-     event.preventDefault();
+    event.preventDefault();
 
-     var senderHotel = document.getElementById('sender-hotel').value;
-     var senderName = document.getElementById('sender-name').value;
-     var recipientHotel = document.getElementById('recipient-hotel').value;
-     var recipientName = document.getElementById('recipient-name').value;
-     var customMessage = document.getElementById('custom-message').value;
+    var senderHotel = document.getElementById('sender-hotel').value;
+    var senderName = document.getElementById('sender-name').value;
+    var recipientHotel = document.getElementById('recipient-hotel').value;
+    var recipientName = document.getElementById('recipient-name').value;
+    var customMessage = document.getElementById('custom-message').value;
 
-     if (senderHotel && senderName && recipientHotel && recipientName && customMessage) {
-         // Enviar los datos al servidor con axios
-         axios.post('https://www.natalhoteispires.com.br/save-message', {
-             senderHotel,
-             senderName,
-             recipientHotel,
-             recipientName,
-             customMessage
-         })
-         .then(response => {
-             alert('Mensaje guardado exitosamente');
-             // Limpiar el formulario
-             document.getElementById('christmas-message-form').reset();
-             // Recargar mensajes
-             loadMessages();
-         })
-         .catch(error => {
-             alert('Hubo un error al guardar el mensaje');
-             console.error('Error:', error);
-         });
-     } else {
-         alert('Por favor, complete todos los campos');
-     }
- });
+    if (senderHotel && senderName && recipientHotel && recipientName && customMessage) {
+        // Enviar los datos al servidor con axios
+        axios.post('https://www.natalhoteispires.com.br/save-message', {
+            senderHotel,
+            senderName,
+            recipientHotel,
+            recipientName,
+            customMessage
+        })
+        .then(response => {
+            alert('Mensaje guardado exitosamente');
+            // Limpiar el formulario
+            document.getElementById('christmas-message-form').reset();
+            // Recargar mensajes
+            loadMessages();
+        })
+        .catch(error => {
+            alert('Hubo un error al guardar el mensaje');
+            console.error('Error:', error);
+            if (error.response) {
+                // El servidor respondió con un código de error
+                console.error('Detalles del error:', error.response.data);
+            } else {
+                // Error en la solicitud, probablemente un problema de red
+                console.error('Error de red o configuración', error.message);
+            }
+        });
+    } else {
+        alert('Por favor, complete todos los campos');
+    }
+});
 
- // Agregar filtros
- document.getElementById('filter-sender').addEventListener('input', filterMessages);
- document.getElementById('filter-recipient').addEventListener('input', filterMessages);
+// Agregar filtros
+document.getElementById('filter-sender').addEventListener('input', filterMessages);
+document.getElementById('filter-recipient').addEventListener('input', filterMessages);
 
- function filterMessages() {
-     const filterSender = document.getElementById('filter-sender').value.toLowerCase();
-     const filterRecipient = document.getElementById('filter-recipient').value.toLowerCase();
+function filterMessages() {
+    const filterSender = document.getElementById('filter-sender').value.toLowerCase();
+    const filterRecipient = document.getElementById('filter-recipient').value.toLowerCase();
 
-     const messageItems = document.querySelectorAll('.message-item');
-     messageItems.forEach(item => {
-         const sender = item.querySelector('strong').nextSibling.nodeValue.trim().toLowerCase();
-         const recipient = item.querySelector('strong:nth-of-type(2)').nextSibling.nodeValue.trim().toLowerCase();
+    const messageItems = document.querySelectorAll('.message-item');
+    messageItems.forEach(item => {
+        const sender = item.querySelector('strong').nextSibling.nodeValue.trim().toLowerCase();
+        const recipient = item.querySelector('strong:nth-of-type(2)').nextSibling.nodeValue.trim().toLowerCase();
 
-         if (
-             sender.includes(filterSender) &&
-             recipient.includes(filterRecipient)
-         ) {
-             item.style.display = ''; // Mostrar el mensaje
-         } else {
-             item.style.display = 'none'; // Ocultar el mensaje
-         }
-     });
- }
+        if (
+            sender.includes(filterSender) &&
+            recipient.includes(filterRecipient)
+        ) {
+            item.style.display = ''; // Mostrar el mensaje
+        } else {
+            item.style.display = 'none'; // Ocultar el mensaje
+        }
+    });
+}
 
- // Cargar mensajes al abrir la página
- window.onload = loadMessages;
+// Cargar mensajes al abrir la página
+window.onload = loadMessages;
 
- function loadMessages() {
-     axios.get('https://www.natalhoteispires.com.br/api/messages')
-         .then(response => {
-             const messages = response.data;
-             const messageBox = document.getElementById('message-box');
-             messageBox.innerHTML = ''; // Limpiar mensajes previos
+function loadMessages() {
+    axios.get('https://www.natalhoteispires.com.br/api/messages')
+        .then(response => {
+            const messages = response.data;
+            const messageBox = document.getElementById('message-box');
+            messageBox.innerHTML = ''; // Limpiar mensajes previos
 
-             messages.forEach(msg => {
-                 const messageItem = document.createElement('div');
-                 messageItem.classList.add('message-item');
-                 messageItem.innerHTML = `
-                     <strong>De:</strong> ${msg.senderName} (${msg.senderHotel})<br>
-                     <strong>Para:</strong> ${msg.recipientName} (${msg.recipientHotel})<br>
-                     <strong>Mensaje:</strong> ${msg.customMessage}<br>
-                     <small><em>Enviado en: ${msg.created_at}</em></small>
-                 `;
-                 messageBox.appendChild(messageItem);
-             });
-         })
-         .catch(error => console.error('Error al cargar mensajes:', error));
- }
+            messages.forEach(msg => {
+                const messageItem = document.createElement('div');
+                messageItem.classList.add('message-item');
+                messageItem.innerHTML = `
+                    <strong>De:</strong> ${msg.senderName} (${msg.senderHotel})<br>
+                    <strong>Para:</strong> ${msg.recipientName} (${msg.recipientHotel})<br>
+                    <strong>Mensaje:</strong> ${msg.customMessage}<br>
+                    <small><em>Enviado en: ${msg.created_at}</em></small>
+                `;
+                messageBox.appendChild(messageItem);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar mensajes:', error);
+            alert('Hubo un error al cargar los mensajes');
+        });
+}
+
 
 </script>
 </body>

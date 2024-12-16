@@ -1,4 +1,13 @@
+const express = require('express');
 const { MongoClient } = require('mongodb');
+
+const app = express();
+const port = 3000;
+
+app.use(express.json()); // Para manejar el cuerpo de las solicitudes POST
+
+const mongoUrl = 'mongodb://localhost:27017'; // URL de conexión a MongoDB
+const dbName = 'nombre_de_tu_base_de_datos';  // Nombre de tu base de datos
 
 const allowCors = (fn) => async (req, res) => {
   const allowedOrigins = ['https://www.natalhoteispires.com.br', 'http://localhost:3000'];
@@ -16,6 +25,8 @@ const allowCors = (fn) => async (req, res) => {
 };
 
 const handler = async (req, res) => {
+  const client = new MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+
   try {
     console.log('Datos recibidos:', req.body);
 
@@ -30,10 +41,13 @@ const handler = async (req, res) => {
       return res.status(400).json({ error: 'Los datos deben ser cadenas de texto válidas' });
     }
 
-    // Inserción de mensaje en la base de datos
-    const db = req.app.locals.db; // Asegúrate de que `db` esté correctamente configurado
-    const messages = db.collection('suporte');
-    
+    // Conectar a MongoDB
+    await client.connect();
+    console.log('Conectado a la base de datos');
+
+    const db = client.db(dbName); // Acceso a la base de datos
+    const messages = db.collection('suporte'); // Acceder a la colección
+
     const newMessage = {
       senderHotel,
       senderName,
@@ -43,13 +57,22 @@ const handler = async (req, res) => {
       created_at: new Date(),
     };
 
-    const result = await messages.insertOne(newMessage);
+    const result = await messages.insertOne(newMessage); // Insertar mensaje
 
     res.json({ message: 'Mensaje guardado exitosamente', id: result.insertedId });
   } catch (err) {
     console.error('Error al guardar el mensaje:', err);
     res.status(500).json({ error: 'Error al guardar el mensaje', details: err.message });
+  } finally {
+    // Asegurarse de cerrar la conexión después de la operación
+    await client.close();
   }
 };
 
-module.exports = allowCors(handler);
+// Ruta para guardar el mensaje
+app.post('/save-message', allowCors(handler));
+
+// Iniciar el servidor
+app.listen(port, () => {
+  console.log(`Servidor ejecutándose en http://localhost:${port}`);
+});

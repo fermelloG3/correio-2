@@ -49,12 +49,12 @@ const handler = async (req, res) => {
       const rows = await collection.find().limit(100).toArray();
       res.status(200).json(rows);
     } catch (err) {
-      console.error('Error al obtener los mensajes:', err.message);
+      console.error('Erro ao obtee as mensagens:', err.message);
       res.status(500).json({ error: 'Error al obtener los mensajes', details: err.message });
     }
   } else {
     res.setHeader('Allow', 'GET'); // Especificar los métodos permitidos
-    res.status(405).json({ error: 'Método no permitido' });
+    res.status(405).json({ error: 'Método não permitido' });
   }
 };
 

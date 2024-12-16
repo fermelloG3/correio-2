@@ -60,7 +60,7 @@ const handler = async (req, res) => {
     }
 
     // Inserción de mensaje en la base de datos
-    const messages = db.collection('suporte');
+    const messages = db.collection('messages');
 
     const newMessage = {
       senderHotel,

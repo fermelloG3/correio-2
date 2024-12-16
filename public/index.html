@@ -281,35 +281,41 @@
     var customMessage = document.getElementById('custom-message').value;
 
     if (senderHotel && senderName && recipientHotel && recipientName && customMessage) {
-        // Enviar los datos al servidor con axios
-        axios.post('https://www.natalhoteispires.com.br/api/save-message', {
-            senderHotel,
-            senderName,
-            recipientHotel,
-            recipientName,
-            customMessage
-        })
-        .then(response => {
-            alert('Mensaje guardado exitosamente');
-            // Limpiar el formulario
-            document.getElementById('christmas-message-form').reset();
-            // Recargar mensajes
-            loadMessages();
-        })
-        .catch(error => {
-            alert('Hubo un error al guardar el mensaje');
-            console.error('Error:', error);
-            if (error.response) {
-                // El servidor respondió con un código de error
-                console.error('Detalles del error:', error.response.data);
-            } else {
-                // Error en la solicitud, probablemente un problema de red
-                console.error('Error de red o configuración', error.message);
-            }
-        });
-    } else {
-        alert('Por favor, complete todos los campos');
-    }
+    // Enviar los datos al servidor con axios
+    axios.post('https://www.natalhoteispires.com.br/api/save-message', {
+        senderHotel,
+        senderName,
+        recipientHotel,
+        recipientName,
+        customMessage
+    }, {
+        headers: {
+            'Content-Type': 'application/json', // Asegura que los datos se envíen como JSON
+            'Accept': 'application/json' // Opcional, dependiendo de la configuración del servidor
+        }
+    })
+    .then(response => {
+        alert('Mensaje guardado exitosamente');
+        // Limpiar el formulario
+        document.getElementById('christmas-message-form').reset();
+        // Recargar mensajes
+        loadMessages();
+    })
+    .catch(error => {
+        alert('Hubo un error al guardar el mensaje');
+        console.error('Error:', error);
+        if (error.response) {
+            // El servidor respondió con un código de error
+            console.error('Detalles del error:', error.response.data);
+        } else {
+            // Error en la solicitud, probablemente un problema de red
+            console.error('Error de red o configuración', error.message);
+        }
+    });
+} else {
+    alert('Por favor, complete todos los campos');
+}
+
 });
 
 // Agregar filtros

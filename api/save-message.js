@@ -42,10 +42,6 @@ const handler = async (req, res) => {
 
     const { senderHotel, senderName, recipientHotel, recipientName, customMessage } = req.body;
 
-    // Validación de datos
-    if (!senderHotel || !senderName || !recipientHotel || !recipientName || !customMessage) {
-      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
-    }
 
     if (typeof senderHotel !== 'string' || typeof recipientHotel !== 'string' || typeof senderName !== 'string' || typeof recipientName !== 'string' || typeof customMessage !== 'string') {
       return res.status(400).json({ error: 'Los datos deben ser cadenas de texto válidas' });

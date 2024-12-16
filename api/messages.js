@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 
 const allowCors = (fn) => async (req, res) => {
-  const allowedOrigins = ['https://correio-2-fermellog3s-projects.vercel.app', 'http://localhost:3000'];
+  const allowedOrigins = ['https://correio-2.vercel.app', 'http://localhost:3000'];
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {

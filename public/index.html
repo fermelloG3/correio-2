@@ -282,7 +282,7 @@
 
      if (senderHotel && senderName && recipientHotel && recipientName && customMessage) {
          // Enviar los datos al servidor con axios
-         axios.post('https://correio-2-fermellog3s-projects.vercel.app/save-message', {
+         axios.post('https://correio-2.vercel.app/save-message', {
              senderHotel,
              senderName,
              recipientHotel,
@@ -333,7 +333,7 @@
  window.onload = loadMessages;
 
  function loadMessages() {
-     axios.get('https://correio-2-fermellog3s-projects.vercel.app/api/messages')
+     axios.get('https://correio-2.vercel.app/api/messages')
          .then(response => {
              const messages = response.data;
              const messageBox = document.getElementById('message-box');

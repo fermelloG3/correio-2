@@ -1,32 +1,33 @@
-const express = require('express');
 const { MongoClient } = require('mongodb');
 
-const app = express();
-const port = 3000;
+// Definir la URL de MongoDB y la base de datos
+const mongoUrl = 'mongodb://localhost:27017'; // Cambia esto si es necesario
+const dbName = 'correiodenatal';  // Cambia el nombre de tu base de datos
 
-app.use(express.json()); // Para manejar el cuerpo de las solicitudes POST
+let cachedDb = null;
 
-const mongoUrl = 'mongodb://localhost:27017'; // URL de conexión a MongoDB
-const dbName = 'nombre_de_tu_base_de_datos';  // Nombre de tu base de datos
-
-const allowCors = (fn) => async (req, res) => {
-  const allowedOrigins = ['https://www.natalhoteispires.com.br', 'http://localhost:3000'];
-  res.setHeader('Access-Control-Allow-Origin', allowedOrigins.join(', '));
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+// Función para obtener la conexión a la base de datos
+const connectToDatabase = async () => {
+  if (cachedDb) {
+    console.log("Usando la conexión de caché");
+    return cachedDb; // Si ya existe una conexión, la reutilizamos
   }
 
-  return await fn(req, res);
-};
-
-const handler = async (req, res) => {
   const client = new MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 
+  try {
+    await client.connect();
+    cachedDb = client.db(dbName);
+    console.log("Conexión exitosa a MongoDB");
+    return cachedDb;
+  } catch (err) {
+    console.error('Error al conectar a la base de datos:', err);
+    throw new Error('No se pudo conectar a la base de datos');
+  }
+};
+
+// Función que maneja la solicitud POST
+const handler = async (req, res) => {
   try {
     console.log('Datos recibidos:', req.body);
 
@@ -41,13 +42,11 @@ const handler = async (req, res) => {
       return res.status(400).json({ error: 'Los datos deben ser cadenas de texto válidas' });
     }
 
-    // Conectar a MongoDB
-    await client.connect();
-    console.log('Conectado a la base de datos');
-
-    const db = client.db(dbName); // Acceso a la base de datos
+    // Conectar a la base de datos
+    const db = await connectToDatabase();
     const messages = db.collection('suporte'); // Acceder a la colección
 
+    // Crear el mensaje
     const newMessage = {
       senderHotel,
       senderName,
@@ -57,22 +56,14 @@ const handler = async (req, res) => {
       created_at: new Date(),
     };
 
-    const result = await messages.insertOne(newMessage); // Insertar mensaje
+    // Insertar el mensaje en la base de datos
+    const result = await messages.insertOne(newMessage);
 
     res.json({ message: 'Mensaje guardado exitosamente', id: result.insertedId });
   } catch (err) {
     console.error('Error al guardar el mensaje:', err);
     res.status(500).json({ error: 'Error al guardar el mensaje', details: err.message });
-  } finally {
-    // Asegurarse de cerrar la conexión después de la operación
-    await client.close();
   }
 };
 
-// Ruta para guardar el mensaje
-app.post('/save-message', allowCors(handler));
-
-// Iniciar el servidor
-app.listen(port, () => {
-  console.log(`Servidor ejecutándose en http://localhost:${port}`);
-});
+module.exports = handler;

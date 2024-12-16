@@ -281,20 +281,27 @@
     var customMessage = document.getElementById('custom-message').value;
 
     
-    // Enviar los datos al servidor con axios
-    axios.post('https://www.natalhoteispires.com.br/api/save-message', {
+    // Comprobar si todos los campos están completos
+if (senderHotel && senderName && recipientHotel && recipientName && customMessage) {
+    // Crear un objeto con los datos a enviar
+    const data = {
         senderHotel,
         senderName,
         recipientHotel,
         recipientName,
         customMessage
-    }, {
+    };
+
+    // Enviar los datos al servidor con fetch
+    fetch('https://www.natalhoteispires.com.br/api/save-message', {
+        method: 'POST', // Método de la solicitud
         headers: {
-            'Content-Type': 'application/json', // Asegura que los datos se envíen como JSON
-            'Accept': 'application/json' // Opcional, dependiendo de la configuración del servidor
-        }
+            'Content-Type': 'application/json' // Especificar que el cuerpo de la solicitud es JSON
+        },
+        body: JSON.stringify(data) // Convertir el objeto en una cadena JSON
     })
-    .then(response => {
+    .then(response => response.json()) // Procesar la respuesta como JSON
+    .then(data => {
         alert('Mensaje guardado exitosamente');
         // Limpiar el formulario
         document.getElementById('christmas-message-form').reset();
@@ -304,16 +311,11 @@
     .catch(error => {
         alert('Hubo un error al guardar el mensaje');
         console.error('Error:', error);
-        if (error.response) {
-            // El servidor respondió con un código de error
-            console.error('Detalles del error:', error.response.data);
-        } else {
-            // Error en la solicitud, probablemente un problema de red
-            console.error('Error de red o configuración', error.message);
-        }
     });
+} else {
+    alert('Por favor, complete todos los campos');
+}
 }  
-  
 );
 
 // Agregar filtros

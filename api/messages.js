@@ -39,23 +39,35 @@ const connectToDatabase = async () => {
   return { client, db };
 };
 
+// Función principal (handler) que maneja las solicitudes
 const handler = async (req, res) => {
   if (req.method === 'GET') {
     try {
+      // Conexión a la base de datos
       const { db } = await connectToDatabase();
       const collection = db.collection('suporte');
 
-      // Obtener los primeros 100 registros
-      const rows = await collection.find().limit(100).toArray();
+      // Consulta: ordenar por fecha descendente y limitar el número de resultados
+      const rows = await collection
+        .find()
+        .sort({ fecha: -1 }) // Ordenar por "fecha" descendente
+        .limit(500) // Limitar a 500 registros
+        .toArray();
+
+      // Respuesta al cliente con los registros obtenidos
       res.status(200).json(rows);
     } catch (err) {
-      console.error('Erro ao obtee as mensagens:', err.message);
-      res.status(500).json({ error: 'Error al obtener los mensajes', details: err.message });
+      // Manejo de errores en la base de datos o consulta
+      console.error('Erro ao obter as mensagens:', err.message);
+      res.status(500).json({ error: 'Erro ao obter as mensagens', details: err.message });
     }
   } else {
-    res.setHeader('Allow', 'GET'); // Especificar los métodos permitidos
+    // Respuesta para métodos no permitidos
+    res.setHeader('Allow', 'GET');
     res.status(405).json({ error: 'Método não permitido' });
   }
 };
 
+// Habilitar CORS (asegúrate de tener la función allowCors definida previamente)
 module.exports = allowCors(handler);
+
